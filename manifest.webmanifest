@@ -1,0 +1,12 @@
+{
+  "id": "./",
+  "name": "PDF Sanitizer - Forensic Redaction Tool",
+  "short_name": "PDF Sanitizer",
+  "description": "Audit e redaction locale di PDF. Nessun backend di elaborazione.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#0B0E14",
+  "theme_color": "#0B0E14",
+  "lang": "it"
+}

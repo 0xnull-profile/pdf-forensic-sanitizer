@@ -1,0 +1,137 @@
+{
+  "spdxVersion": "SPDX-2.3",
+  "dataLicense": "CC0-1.0",
+  "SPDXID": "SPDXRef-DOCUMENT",
+  "name": "PDF-Sanitizer-0.6.0-rc.1",
+  "documentNamespace": "https://example.invalid/pdf-sanitizer/spdx/1a041c9889c8ee56d0dbae84766a1986",
+  "creationInfo": {
+    "creators": [
+      "Tool: pdf-sanitizer-static-release/0.6.0-rc.1"
+    ],
+    "created": "1970-01-01T00:00:00Z"
+  },
+  "packages": [
+    {
+      "SPDXID": "SPDXRef-Package-1",
+      "name": "@pdf-lib/standard-fonts",
+      "versionInfo": "1.0.0",
+      "downloadLocation": "https://registry.npmjs.org/@pdf-lib/standard-fonts/-/standard-fonts-1.0.0.tgz",
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "MIT",
+      "checksums": [
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "854df404af4850dfecbb4327f5576554ab16052e86ca155faa3c25d458d93784f13fa702c348cfdb0ed5dc77f9b97eccd00649d7abdecbdc84d27cbb49ae7d64"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-Package-2",
+      "name": "@pdf-lib/upng",
+      "versionInfo": "1.0.1",
+      "downloadLocation": "https://registry.npmjs.org/@pdf-lib/upng/-/upng-1.0.1.tgz",
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "MIT",
+      "checksums": [
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "7502b6154310b68c153f4d26b4892cae56617455d064f0beb5a8a1d6ae02bcf679bea77147f2ca05a160d2801fcddd469476575d23dd41fcd09edf95886bc421"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-Package-3",
+      "name": "pako",
+      "versionInfo": "1.0.11",
+      "downloadLocation": "https://registry.npmjs.org/pako/-/pako-1.0.11.tgz",
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "(MIT AND Zlib)",
+      "checksums": [
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "e212c1f0fcb8cd971ee6ce3277d5f3a29ab056fff218d855d4197c353982ab5efadc778adbe130553bfe95e19e2f5dc39e1db07dbaa8c153d70883b4cf8b5a63"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-Package-4",
+      "name": "pdf-lib",
+      "versionInfo": "1.17.1",
+      "downloadLocation": "https://registry.npmjs.org/pdf-lib/-/pdf-lib-1.17.1.tgz",
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "MIT",
+      "checksums": [
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "57f9a9c890284ec3787273f7d6f734c1f340d7ea76d1ebeaaa76a9d0a2e8454374624fe9df0379d83384b0be2804570b75befa865a4a3edcc9220a3aee3fd72f"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-Package-5",
+      "name": "pdfjs-dist",
+      "versionInfo": "6.5.438",
+      "downloadLocation": "https://registry.npmjs.org/pdfjs-dist/-/pdfjs-dist-6.5.438.tgz",
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "Apache-2.0",
+      "checksums": [
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "be0f0fc35c7e0052b2e00303be1b9697970e615f1debdf14a0400da0516173bf61a970e7650aa7397a31c371c6f74ed61ce8352583af2e13fbe7a6e875d171a4"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-Package-6",
+      "name": "tslib",
+      "versionInfo": "1.14.1",
+      "downloadLocation": "https://registry.npmjs.org/tslib/-/tslib-1.14.1.tgz",
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "0BSD",
+      "checksums": [
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "5e78b7e4d2b38e032bc1ebf2b074c202bb4b0e93efc9ef3357fd04e04c989f8dcfeffeeabd0c0f87d0469077b06ccba5567b5b8a099c4fbadd5f704da3dc1126"
+        }
+      ]
+    }
+  ],
+  "relationships": [
+    {
+      "spdxElementId": "SPDXRef-DOCUMENT",
+      "relatedSpdxElement": "SPDXRef-Package-1",
+      "relationshipType": "DESCRIBES"
+    },
+    {
+      "spdxElementId": "SPDXRef-DOCUMENT",
+      "relatedSpdxElement": "SPDXRef-Package-2",
+      "relationshipType": "DESCRIBES"
+    },
+    {
+      "spdxElementId": "SPDXRef-DOCUMENT",
+      "relatedSpdxElement": "SPDXRef-Package-3",
+      "relationshipType": "DESCRIBES"
+    },
+    {
+      "spdxElementId": "SPDXRef-DOCUMENT",
+      "relatedSpdxElement": "SPDXRef-Package-4",
+      "relationshipType": "DESCRIBES"
+    },
+    {
+      "spdxElementId": "SPDXRef-DOCUMENT",
+      "relatedSpdxElement": "SPDXRef-Package-5",
+      "relationshipType": "DESCRIBES"
+    },
+    {
+      "spdxElementId": "SPDXRef-DOCUMENT",
+      "relatedSpdxElement": "SPDXRef-Package-6",
+      "relationshipType": "DESCRIBES"
+    }
+  ]
+}

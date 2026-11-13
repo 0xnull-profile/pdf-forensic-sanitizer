@@ -1,0 +1,5 @@
+# Keep release assets byte-for-byte identical.
+* -text
+
+# Treat third-party libraries as vendored files.
+vendor/** -diff
