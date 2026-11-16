@@ -22,7 +22,7 @@ const ui = {
   zoomLabel: $('#zoom-level'), fileName: $('#document-name'),
   phase: $('.phase-indicator'), status: $('#session-state'), detail: $('#document-detail'),
   operation: $('#operation-status'), net: $('#network-indicator'),
-  netText: $('#network-indicator .network-text'),
+  netText: $('#network-indicator .network-text'), netMobile: $('.network-text-mobile'),
   offlineCache: $('#offline-cache-indicator'),
   previewText: $('#xray-text-preview'), xrayPanel: $('#xray-preview'),
   xrayInfo: $('#xray-preview-info'),
@@ -44,6 +44,7 @@ const ui = {
   reportOutput: $('#report-output'), copyReport: $('[data-action="copy-report"]'),
   exportSummary: $('.export-summary span'),
   notification: $('#notification-region'),
+  mobileHint: $('#mobile-edit-hint'), mobileRedactionCount: $('#mobile-redaction-count'),
   drawer: $('#inspector-panel'), drawerToggle: $('.inspector-toggle'),
   drawerClose: $('.inspector-close'), drawerBackdrop: $('.drawer-backdrop'),
 };
@@ -60,6 +61,8 @@ let inactivityTimer = 0;
 let warningTimer = 0;
 let resizeTimer = 0;
 let fileDragCounter = 0;
+/** @type {HTMLElement|null} */
+let drawerReturnFocus = null;
 
 /** @param {string} selector @param {boolean} enabled */
 function enable(selector, enabled) {
@@ -89,6 +92,7 @@ function updateNetworkIndicator() {
   const online = navigator.onLine !== false;
   ui.net.dataset.networkState = online ? 'online' : 'offline';
   ui.netText.textContent = online ? 'ONLINE · ELABORAZIONE LOCALE' : 'OFFLINE RILEVATO';
+  ui.netMobile.textContent = online ? 'ONLINE' : 'OFFLINE';
   ui.net.setAttribute('aria-label', online ? 'Browser segnala una connessione. Elaborazione locale.' : 'Browser segnala modalità offline.');
   ui.net.title = online
     ? 'La connettività non prova l\'assenza di richieste. Verifica con DevTools > Network. Puoi scollegare la rete prima di importare dati riservati.'
@@ -137,6 +141,7 @@ function updateControls() {
   enable('[data-action="fit-width"]', ready);
   enable('[data-tool="xray"], [data-tool="redact"], [data-tool="pan"], [data-tool="select"]', pageVisible);
   enable('#tab-redaction, #tab-export', ready);
+  enable('[data-action="mobile-inspector"]', ready);
   enable('#watermark-text, #watermark-opacity, input[name="export-dpi"]', canExport);
   document.querySelector('.quality-fieldset').disabled = !canExport;
   enable('[data-action="sanitize-export"]', canExport);
@@ -244,6 +249,7 @@ function updateRedactionList() {
   invalidateVerifiedOutput();
   const boxes = state.store.all();
   ui.redactionCount.textContent = String(boxes.length);
+  ui.mobileRedactionCount.textContent = String(boxes.length);
   ui.redactionList.className = boxes.length ? 'redaction-list-filled' : 'redaction-list-empty';
   ui.redactionList.replaceChildren();
   if (!boxes.length) {
@@ -283,6 +289,12 @@ function setEditorTool(tool) {
   state.editor?.setTool(/** @type {'select'|'redact'|'pan'} */ (tool));
   ui.shell.dataset.activeTool = tool;
   if (tool === 'redact') selectTab('tab-redaction');
+  ui.mobileHint.hidden = tool === 'select';
+  ui.mobileHint.textContent = tool === 'redact'
+    ? 'Trascina il dito sul PDF per creare un riquadro. Usa Sposta per scorrere la pagina.'
+    : tool === 'pan'
+      ? 'Trascina la pagina per spostarla. Torna a Seleziona per modificare i riquadri.'
+      : '';
   for (const item of document.querySelectorAll('[data-tool="select"], [data-tool="redact"], [data-tool="pan"]')) {
     item.setAttribute('aria-pressed', String(item.getAttribute('data-tool') === tool));
   }
@@ -293,7 +305,14 @@ async function selectRedaction(id) {
   const box = state.store.get(id);
   if (!box || state.phase !== 'ready') return;
   if (box.page !== state.page) await showPage(box.page);
-  if (state.phase === 'ready') { setEditorTool('select'); state.editor?.select(id); }
+  if (state.phase === 'ready') {
+    setEditorTool('select');
+    state.editor?.select(id);
+    if (matchMedia('(max-width: 1023px)').matches) {
+      closeDrawer();
+      ui.viewer.focus({ preventScroll: true });
+    }
+  }
 }
 
 function addNumericRedaction() {
@@ -469,7 +488,8 @@ function resetVisualState() {
   ui.operation.textContent = 'In attesa di un PDF locale';
   ui.dropzone.dataset.dropState = 'idle';
   ui.shell.dataset.activeTool = 'select';
-  ui.viewer.querySelector('[data-tool="xray"]')?.setAttribute('aria-pressed', 'false');
+  ui.mobileHint.hidden = true;
+  for (const button of document.querySelectorAll('[data-tool="xray"]')) button.setAttribute('aria-pressed', 'false');
   for (const tool of document.querySelectorAll('[data-tool="redact"], [data-tool="pan"], [data-tool="select"]')) tool.setAttribute('aria-pressed', 'false');
   ui.watermark.value = ''; ui.opacity.value = '25'; ui.opacityValue.textContent = '25%';
   ui.progress.hidden = true; ui.progressBar.value = 0;
@@ -488,18 +508,29 @@ function resetVisualState() {
   updateControls();
 }
 
+/** @param {boolean} expanded */
+function setDrawerExpanded(expanded) {
+  for (const button of document.querySelectorAll('.inspector-toggle, [data-action="mobile-inspector"]')) {
+    button.setAttribute('aria-expanded', String(expanded &&
+      (button === drawerReturnFocus || button === ui.drawerToggle)));
+  }
+}
 function closeDrawer(restoreFocus = false) {
   const wasOpen = ui.drawer.classList.contains('is-open');
   ui.drawer.classList.remove('is-open');
   ui.drawer.removeAttribute('role');
   ui.drawer.removeAttribute('aria-modal');
-  ui.drawerToggle?.setAttribute('aria-expanded', 'false');
+  setDrawerExpanded(false);
   if (location.hash === '#inspector-panel') history.replaceState(null, '', location.pathname + location.search);
-  if (restoreFocus && wasOpen) ui.drawerToggle?.focus();
+  const target = drawerReturnFocus;
+  drawerReturnFocus = null;
+  if (restoreFocus && wasOpen && target?.isConnected) target.focus();
 }
-function openDrawer() {
+/** @param {HTMLElement|null} [trigger] */
+function openDrawer(trigger = ui.drawerToggle) {
+  drawerReturnFocus = trigger;
   ui.drawer.classList.add('is-open');
-  ui.drawerToggle?.setAttribute('aria-expanded', 'true');
+  setDrawerExpanded(true);
   if (matchMedia('(max-width: 1023px)').matches) {
     ui.drawer.setAttribute('role', 'dialog');
     ui.drawer.setAttribute('aria-modal', 'true');
@@ -554,8 +585,7 @@ async function importFile(file) {
     state.zoom = 1;
     state.fit = false;
     state.phase = 'ready';
-    state.editor?.setTool('select');
-    ui.shell.dataset.activeTool = 'select';
+    setEditorTool('select');
     resetIdleTimer();
     ui.fileName.textContent = safeText(file.name, 120) || 'documento.pdf';
     ui.fileName.title = 'Nome del file locale';
@@ -657,7 +687,7 @@ async function toggleXray() {
   if (state.phase !== 'ready') return;
   state.xray = !state.xray;
   ui.xrayPanel.hidden = !state.xray;
-  ui.viewer.querySelector('[data-tool="xray"]')?.setAttribute('aria-pressed', String(state.xray));
+  for (const button of document.querySelectorAll('[data-tool="xray"]')) button.setAttribute('aria-pressed', String(state.xray));
   if (state.xray) await updateXray(state.epoch, state.renderEpoch);
 }
 
@@ -742,6 +772,7 @@ function selectTab(tabId) {
     item.tabIndex = selected ? 0 : -1;
     document.getElementById(item.getAttribute('aria-controls'))?.toggleAttribute('hidden', !selected);
   }
+  ui.drawer.querySelector('.inspector-content').scrollTop = 0;
 }
 
 function attachEvents() {
@@ -750,6 +781,14 @@ function attachEvents() {
     if (!element || element.hasAttribute('disabled')) return;
     switch (element.getAttribute('data-action')) {
       case 'open-file': if (state.phase === 'empty') ui.file.click(); break;
+      case 'mobile-inspector': {
+        if (state.phase !== 'ready') break;
+        const target = element.getAttribute('data-target-tab');
+        if (!['tab-audit', 'tab-redaction', 'tab-export'].includes(target)) break;
+        selectTab(target);
+        openDrawer(/** @type {HTMLElement} */ (element));
+        break;
+      }
       case 'destroy-session': ui.destroyDialog.showModal(); break;
       case 'cancel-destroy': ui.destroyDialog.close(); break;
       case 'confirm-destroy': void destroySession(); break;
@@ -779,7 +818,9 @@ function attachEvents() {
     else ui.pageInput.value = String(state.page);
   });
 
-  ui.viewer.querySelector('[data-tool="xray"]')?.addEventListener('click', () => void toggleXray());
+  for (const button of document.querySelectorAll('[data-tool="xray"]')) {
+    button.addEventListener('click', () => void toggleXray());
+  }
   for (const item of document.querySelectorAll('[data-tool="select"], [data-tool="redact"], [data-tool="pan"]')) {
     item.addEventListener('click', () => setEditorTool(item.getAttribute('data-tool')));
   }
@@ -872,7 +913,8 @@ function attachEvents() {
       closeDrawer(true); return;
     }
     if (event.key === 'Tab' && ui.drawer.classList.contains('is-open') &&
-        matchMedia('(max-width: 1023px)').matches && !ui.destroyDialog.open) {
+        matchMedia('(max-width: 1023px)').matches &&
+        ![ui.destroyDialog, ui.exportDialog, ui.reportDialog].some((dialog) => dialog.open)) {
       const focusable = [...ui.drawer.querySelectorAll('button:not(:disabled), a[href], input:not(:disabled)')]
         .filter((item) => item.getClientRects().length > 0);
       const first = focusable[0], last = focusable[focusable.length - 1];
@@ -905,7 +947,13 @@ function attachEvents() {
   for (const event of ['pointerdown', 'keydown', 'wheel', 'touchstart']) {
     document.addEventListener(event, recordActivity, { passive: true });
   }
+  let previousViewerWidth = ui.viewer.clientWidth;
   window.addEventListener('resize', () => {
+    // Browser address bars and soft keyboards change height without changing
+    // the available PDF width; avoid unnecessary expensive page re-renders.
+    const width = ui.viewer.clientWidth;
+    if (Math.abs(width - previousViewerWidth) < 2) return;
+    previousViewerWidth = width;
     window.clearTimeout(resizeTimer);
     if (state.fit) resizeTimer = window.setTimeout(() => void fitWidth(), 150);
   });

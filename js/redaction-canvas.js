@@ -120,13 +120,15 @@ export class RedactionStore {
  * Canvas pointer editing plus hit testing; dialogs/lists/ARIA remain in app.js.
  * @param {RedactionBox} box @param {{x:number,y:number}} point
  * @param {number} width @param {number} height
+ * @param {boolean} [touch] Larger targets and no instant-delete gesture on touch.
  */
-export function hitTestBox(box, point, width, height) {
-  const toleranceX = HIT_SIZE_PX / width, toleranceY = HIT_SIZE_PX / height;
+export function hitTestBox(box, point, width, height, touch = false) {
+  const hitSize = touch ? 22 : HIT_SIZE_PX;
+  const toleranceX = hitSize / width, toleranceY = hitSize / height;
   const near = (/** @type {number} */ x, /** @type {number} */ y) =>
     Math.abs(point.x - x) <= toleranceX && Math.abs(point.y - y) <= toleranceY;
   // Never mistake the top-right delete target for a resize handle.
-  if (point.x >= box.x + box.w - DELETE_SIZE_PX / width && point.x <= box.x + box.w &&
+  if (!touch && point.x >= box.x + box.w - DELETE_SIZE_PX / width && point.x <= box.x + box.w &&
       point.y >= box.y && point.y <= box.y + DELETE_SIZE_PX / height) return 'delete';
   if (near(box.x, box.y)) return 'nw';
   if (near(box.x + box.w, box.y)) return 'ne';
@@ -163,7 +165,6 @@ export class RedactionCanvas {
   /** @type {number|null} */ #selected = null;
   /** @type {null | {kind:string, pointerId:number, start:{x:number,y:number},box:RedactionBox|null,initialScrollX:number,initialScrollY:number,clientX:number,clientY:number}} */ #drag = null;
   /** @type {Rect|null} */ #draft = null;
-  #longPressTimer = 0;
 
   /** @param {{canvas:HTMLCanvasElement,viewer:HTMLElement,store:RedactionStore,onChange:()=>void,onWarning:(message:string)=>void}} options */
   constructor({ canvas, viewer, store, onChange, onWarning }) {
@@ -235,16 +236,14 @@ export class RedactionCanvas {
         initialScrollX:this.#viewer.scrollLeft,initialScrollY:this.#viewer.scrollTop,
         clientX:event.clientX,clientY:event.clientY };
     } else if (this.#tool === 'redact') {
-      this.#drag = { kind:event.pointerType === 'touch' ? 'pending-touch' : 'new', pointerId:event.pointerId,start,
+      // Entering redaction mode is explicit. Direct dragging is predictable
+      // on touch screens; the separate pan mode handles document scrolling.
+      this.#drag = { kind:'new', pointerId:event.pointerId,start,
         box:null,initialScrollX:0,initialScrollY:0,clientX:event.clientX,clientY:event.clientY };
-      if (event.pointerType === 'touch') {
-        this.#longPressTimer = window.setTimeout(() => {
-          if (this.#drag?.kind === 'pending-touch') { this.#drag.kind = 'new'; this.#draft = rectBetween(start, start); this.paint(); }
-        }, 360);
-      } else this.#draft = rectBetween(start, start);
+      this.#draft = rectBetween(start, start);
     } else {
       for (const item of current.reverse()) {
-        const hit = hitTestBox(item, start, width, height);
+        const hit = hitTestBox(item, start, width, height, event.pointerType === 'touch');
         if (!hit) continue;
         if (hit === 'delete') { this.remove(item.id); return; }
         this.#selected = item.id;
@@ -263,10 +262,6 @@ export class RedactionCanvas {
   #move(event) {
     const drag = this.#drag;
     if (!drag || drag.pointerId !== event.pointerId) return;
-    if (drag.kind === 'pending-touch') {
-      if (Math.hypot(event.clientX - drag.clientX, event.clientY - drag.clientY) > 6) this.#cancel();
-      return;
-    }
     if (drag.kind === 'pan') {
       this.#viewer.scrollLeft = drag.initialScrollX - (event.clientX - drag.clientX);
       this.#viewer.scrollTop = drag.initialScrollY - (event.clientY - drag.clientY);
@@ -286,10 +281,10 @@ export class RedactionCanvas {
     const drag = this.#drag;
     if (!drag || drag.pointerId !== event.pointerId) return;
     const kind = drag.kind;
-    if (kind !== 'pan' && kind !== 'pending-touch') this.#move(event);
+    if (kind !== 'pan') this.#move(event);
     const box = this.#draft;
     this.#cancel();
-    if (!box || kind === 'pending-touch' || kind === 'pan') return;
+    if (!box || kind === 'pan') return;
     if (kind === 'new') {
       const { width, height } = this.#canvasSize();
       if (box.w * width < 5 || box.h * height < 5) {
@@ -305,8 +300,6 @@ export class RedactionCanvas {
   }
 
   #cancel() {
-    window.clearTimeout(this.#longPressTimer);
-    this.#longPressTimer = 0;
     this.#drag = null;
     this.#draft = null;
     this.paint();
@@ -328,7 +321,7 @@ export class RedactionCanvas {
       ctx.fillRect(x, y, w, h);
       // The delete target exists only in the editor overlay.
       const target = Math.min(DELETE_SIZE_PX * ratio, w, h);
-      if (target >= 12) {
+      if (target >= 12 && !window.matchMedia('(pointer: coarse)').matches) {
         ctx.fillStyle = 'rgba(255,255,255,.17)';
         ctx.fillRect(x + w - target, y, target, target);
         ctx.strokeStyle = '#ffffff';

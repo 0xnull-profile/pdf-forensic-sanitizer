@@ -457,3 +457,235 @@ button:disabled, input:disabled { cursor: not-allowed; }
 @media (max-width: 767px) {
   .offline-cache-state { font-size: 9px; max-width: 104px; }
 }
+
+/* Mobile-first PDF workflow.
+ * The desktop editor remains unchanged; small screens get persistent tools,
+ * a reachable page navigator, and an inspector sheet with safe-area padding.
+ */
+.mobile-toolstrip, .mobile-edit-hint, .mobile-actions, .network-text-mobile { display: none; }
+
+@media (max-width: 767px) {
+  :root { --mobile-tap-size: 46px; }
+  html, body { width: 100%; overflow: hidden; }
+  .app-shell { height: 100dvh; }
+  .workspace-layout, .workspace { min-height: 0; height: auto; }
+  .workspace { height: calc(100dvh - var(--topbar-height)); overflow: hidden; }
+
+  /* Short, legible header: application, honest network state, inspector. */
+  .topbar { min-height: 56px; padding-inline: 12px; }
+  .brand-name { font-size: 12px; }
+  .network-indicator { height: 31px; min-width: 0; padding: 0 9px; gap: 6px; }
+  .network-text { display: none; }
+  .network-text-mobile { display: inline; font: 600 10px/1 var(--font-mono); }
+  .inspector-toggle { min-width: var(--mobile-tap-size); min-height: var(--mobile-tap-size); padding: 0; justify-content: center; }
+  .topbar-actions { gap: 4px; }
+  .workspace-ribbon { min-height: 40px; padding-inline: 14px; }
+  .ribbon-breadcrumb { width: 100%; }
+  .ribbon-breadcrumb .overline { flex-shrink: 0; }
+  .filename { flex: 1; min-width: 0; font-size: 12px; }
+  .phase-indicator { display: none; } /* Do not show stale pseudo-version strings. */
+
+  /* This toolbar is outside the scrollable PDF viewport. */
+  .mobile-toolstrip {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    flex: 0 0 auto;
+    gap: 5px;
+    padding: 6px 10px;
+    background: var(--bg-panel);
+    border-bottom: 1px solid var(--border-subtle);
+  }
+  .app-shell:not([data-app-state="ready"]) .mobile-toolstrip { display: none; }
+  .mobile-tool {
+    min-width: 0;
+    min-height: 49px;
+    padding: 4px 2px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 3px;
+    border: 1px solid transparent;
+    border-radius: var(--radius-md);
+    background: transparent;
+    color: var(--text-secondary);
+    font: 600 11px/1.1 var(--font-ui);
+  }
+  .mobile-tool .icon { width: 19px; height: 19px; }
+  .mobile-tool:disabled { color: var(--text-disabled); }
+  .mobile-tool[aria-pressed="true"]:not(:disabled) {
+    color: var(--accent-primary);
+    background: var(--accent-primary-bg);
+    border-color: var(--border-focus);
+  }
+  .mobile-tool:focus-visible, .mobile-action:focus-visible { outline-offset: -2px; }
+  .mobile-edit-hint {
+    display: block;
+    flex: 0 0 auto;
+    margin: 0;
+    padding: 9px 14px;
+    color: var(--text-secondary);
+    font-size: 12px;
+    line-height: 1.4;
+    background: var(--accent-primary-bg);
+    border-bottom: 1px solid var(--border-subtle);
+  }
+  .app-shell[data-active-tool="redact"] .mobile-edit-hint { color: var(--accent-warning); background: var(--accent-warning-bg); }
+
+  /* The document scrolls independently of the touch controls. */
+  .viewer { padding: 14px 12px 18px; min-height: 0; overscroll-behavior: contain; }
+  .viewer-tools { display: none; }
+  .page-stage { gap: 12px; }
+  .page-stage-hint { padding-inline: 6px; font-size: 11px; line-height: 1.45; }
+  .xray-preview { width: min(100vw - 24px, 520px); }
+  .xray-preview-text { max-height: 32dvh; }
+  .app-shell[data-active-tool="select"] .redaction-overlay { touch-action: none; }
+
+  /* Page and zoom controls no longer scroll away with a large PDF. */
+  .page-mobile-nav {
+    position: relative;
+    left: auto;
+    display: flex;
+    flex: 0 0 auto;
+    align-items: center;
+    justify-content: space-around;
+    gap: 2px;
+    min-width: 0;
+    width: 100%;
+    min-height: 53px;
+    padding: 3px 8px;
+    margin: 0;
+    border: none;
+    border-top: 1px solid var(--border-subtle);
+    border-radius: 0;
+    background: var(--bg-panel);
+  }
+  .app-shell:not([data-app-state="ready"]) .page-mobile-nav { display: none; }
+  .page-mobile-nav .icon-button { min-width: 43px; min-height: var(--mobile-tap-size); }
+  .page-mobile-nav output { min-width: 50px; color: var(--text-primary); font-size: 12px; }
+  .mobile-nav-separator { margin: 0 2px; }
+
+  .workspace-statusbar { min-height: 34px; flex: 0 0 auto; padding-inline: 12px; gap: 8px; }
+  .statusbar-item { min-width: 0; flex: 1 1 auto; }
+  .statusbar-item #session-state { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .offline-cache-state { flex: 0 1 auto; max-width: 112px; font-size: 9px; }
+  .statusbar-spacer { display: none; }
+
+  /* Main tasks remain reachable by thumb and above the home indicator. */
+  .mobile-actions {
+    display: block;
+    flex: 0 0 auto;
+    padding: 6px 10px calc(7px + env(safe-area-inset-bottom, 0px));
+    background: var(--bg-panel);
+    border-top: 1px solid var(--border-strong);
+  }
+  .app-shell:not([data-app-state="empty"]):not([data-app-state="ready"]) .mobile-actions { display: none; }
+  .mobile-upload-button { display: none; width: 100%; min-height: 49px; font-size: 14px; }
+  .mobile-action-tabs { display: none; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 7px; }
+  .app-shell[data-app-state="empty"] .mobile-upload-button { display: flex; }
+  .app-shell[data-app-state="ready"] .mobile-action-tabs { display: grid; }
+  .mobile-action {
+    display: flex;
+    min-width: 0;
+    min-height: 50px;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 4px 6px;
+    border: 1px solid var(--border-strong);
+    border-radius: var(--radius-md);
+    background: var(--bg-surface);
+    color: var(--text-primary);
+    font-size: 12px;
+    font-weight: 600;
+    line-height: 1.15;
+  }
+  .mobile-action .icon { width: 17px; height: 17px; }
+  .mobile-action output { color: inherit; font-size: 11px; }
+  .mobile-action-primary { background: var(--accent-primary); border-color: var(--accent-primary); color: #fff; }
+  .mobile-action:disabled { opacity: .46; }
+
+  /* A bottom sheet fits phones better than a narrow right-side drawer. */
+  .inspector {
+    position: fixed;
+    z-index: 55;
+    top: auto;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: min(87dvh, 760px);
+    max-height: calc(100dvh - 10px);
+    border: 1px solid var(--border-strong);
+    border-bottom: 0;
+    border-radius: 18px 18px 0 0;
+    transform: translateY(105%);
+    box-shadow: var(--shadow-modal);
+    overflow: hidden;
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+  .inspector:target, .inspector.is-open { transform: translateY(0); }
+  .drawer-backdrop { inset: 0; }
+  .inspector-header { height: 70px; min-height: 70px; padding: 16px 18px 8px; }
+  .inspector-header h2 { margin-top: 3px; }
+  .inspector-close { width: var(--mobile-tap-size); height: var(--mobile-tap-size); margin: -6px -6px 0 0; }
+  .inspector-tabs { grid-template-columns: repeat(3, minmax(0, 1fr)); min-height: 53px; height: 53px; padding: 0 10px; }
+  .inspector-tab { min-height: 49px; font-size: 12px; }
+  .inspector-content { padding: 0 17px 24px; overscroll-behavior: contain; -webkit-overflow-scrolling: touch; }
+  .panel-intro { padding: 17px 0 12px; }
+  .panel-intro p { font-size: 13px; }
+  .inspector-footer { padding: 10px 17px 12px; }
+  .export-summary { font-size: 11px; margin-bottom: 8px; }
+  .export-button { min-height: 50px; font-size: 13px; }
+  .mobile-destroy-session { min-height: 46px; margin: 0 17px 8px; width: calc(100% - 34px); }
+  .inspector-section { margin-top: 17px; }
+  .numeric-redaction summary { display: list-item; min-height: 40px; padding-top: 10px; font-size: 13px; }
+  .rect-coordinates { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+  .rect-coordinates label { font-size: 12px; }
+  .rect-coordinates input { min-height: 45px; font-size: 16px; padding: 6px 9px; }
+  .redaction-goto { min-height: 45px; font-size: 12px; }
+  .redaction-delete { min-height: 46px; }
+  .text-input { min-height: 47px; font-size: 16px; }
+  .range-input { min-height: 44px; }
+  .segmented-control span { min-height: 43px; font-size: 12px; }
+  .inspector-section > .button { min-height: 46px; }
+
+  .notification-region { left: 10px; right: 10px; bottom: calc(75px + env(safe-area-inset-bottom, 0px)); }
+  .notification { max-width: 100%; }
+  .notification-close { width: 44px; height: 44px; top: 0; right: 0; }
+  .app-dialog { width: calc(100vw - 20px); max-height: calc(100dvh - 24px - env(safe-area-inset-bottom, 0px)); padding: 19px; }
+  .dialog-actions { display: grid; grid-template-columns: 1fr; }
+  .dialog-actions .button { white-space: normal; min-height: 48px; text-align: center; }
+  .report-output { max-height: 32dvh; overflow-y: auto; }
+
+  /* Keep the import task clear on short phones. */
+  .empty-state { width: 100%; gap: 12px; }
+  .dropzone { padding: 25px 18px; }
+  .dropzone .upload-button { display: none; } /* The persistent bottom button owns this action. */
+  .dropzone h1 { font-size: clamp(18px, 5vw, 22px); }
+  .dropzone-description { margin: 10px 0 18px; font-size: 13px; line-height: 1.55; }
+  .dropzone-footnote { margin-top: 12px; font-size: 11px; }
+  .dropzone-icon { margin-bottom: 12px; }
+  .viewport-hint { max-width: 100%; font-size: 11px; line-height: 1.5; }
+}
+
+@media (max-width: 359px) {
+  .topbar { padding-inline: 8px; }
+  .brand-name { font-size: 11px; }
+  .network-indicator { padding-inline: 7px; }
+  .page-mobile-nav { padding-inline: 4px; gap: 1px; }
+  .page-mobile-nav .icon-button { min-width: 40px; }
+  .page-mobile-nav output { min-width: 42px; }
+  .mobile-toolstrip { gap: 3px; padding-inline: 6px; }
+  .mobile-action { gap: 3px; padding-inline: 2px; font-size: 11px; }
+  .mobile-action .icon { width: 15px; }
+  .mobile-action-tabs { gap: 4px; }
+}
+
+@media (max-width: 767px) and (max-height: 560px) {
+  .inspector { height: 94dvh; }
+  .dropzone { padding-block: 18px; }
+  .dropzone-icon { width: 44px; height: 44px; }
+  .dropzone-icon > .icon { width: 25px; height: 25px; }
+  .dropzone-description { margin-block: 7px 12px; }
+}

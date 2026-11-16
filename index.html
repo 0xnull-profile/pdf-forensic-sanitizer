@@ -4,7 +4,7 @@
   <!-- GitHub Pages supports the page-level CSP meta-tag, but not custom CSP response headers for workers. -->
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'wasm-unsafe-eval'; style-src 'self'; img-src 'self' data: blob:; font-src 'self'; worker-src 'self' blob:; connect-src 'self'; manifest-src 'self'; media-src 'none'; object-src 'none'; frame-src 'none'; base-uri 'none'; form-action 'none'">
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="referrer" content="no-referrer">
   <meta name="color-scheme" content="dark">
   <meta name="theme-color" content="#0B0E14">
@@ -74,6 +74,7 @@
         <div id="network-indicator" class="network-indicator" data-network-state="unknown" role="status" aria-label="Stato rete non ancora verificato" title="Lo stato della rete sarà verificato dal modulo applicativo">
           <span class="network-dot" aria-hidden="true"></span>
           <span class="network-text">RETE · NON VERIFICATA</span>
+          <span class="network-text-mobile" aria-hidden="true">RETE</span>
         </div>
         <button class="button button-ghost destroy-session" type="button" data-action="destroy-session" disabled>
           <svg class="icon"><use href="#i-trash"/></svg><span>Distruggi sessione</span>
@@ -89,7 +90,16 @@
           <span class="phase-indicator"><span class="phase-dot" aria-hidden="true"></span>AVVIO MOTORE LOCALE</span>
         </div>
 
-        <section class="viewer" id="viewer" aria-label="Visualizzatore PDF">
+        <!-- Touch-first controls stay in view while the PDF canvas scrolls. -->
+        <div class="mobile-toolstrip" role="toolbar" aria-label="Strumenti PDF touch">
+          <button class="mobile-tool" type="button" data-tool="select" aria-label="Seleziona e modifica riquadri" aria-pressed="false" disabled><svg class="icon" aria-hidden="true"><use href="#i-pointer"/></svg><span>Seleziona</span></button>
+          <button class="mobile-tool" type="button" data-tool="redact" aria-label="Disegna oscuramento sul PDF" aria-pressed="false" disabled><svg class="icon" aria-hidden="true"><use href="#i-target"/></svg><span>Oscura</span></button>
+          <button class="mobile-tool" type="button" data-tool="pan" aria-label="Sposta la pagina con il dito" aria-pressed="false" disabled><svg class="icon" aria-hidden="true"><use href="#i-hand"/></svg><span>Sposta</span></button>
+          <button class="mobile-tool" type="button" data-tool="xray" aria-label="Mostra testo estraibile X-Ray" aria-pressed="false" disabled><svg class="icon" aria-hidden="true"><use href="#i-eye"/></svg><span>X-Ray</span></button>
+        </div>
+        <p class="mobile-edit-hint" id="mobile-edit-hint" role="status" hidden></p>
+
+        <section class="viewer" id="viewer" aria-label="Visualizzatore PDF" tabindex="-1">
           <div class="viewer-tools" role="toolbar" aria-label="Strumenti del documento">
             <button class="viewer-tool" type="button" data-tool="select" aria-keyshortcuts="V" aria-label="Seleziona" title="Seleziona" disabled><svg class="icon"><use href="#i-pointer"/></svg><span>Seleziona</span></button>
             <span class="tool-separator" aria-hidden="true"></span>
@@ -118,15 +128,7 @@
               <canvas class="pdf-page-canvas" id="pdf-page-canvas" role="img" aria-label="Anteprima visuale della pagina PDF">Il tuo browser non supporta canvas.</canvas>
               <canvas class="redaction-overlay" id="redaction-overlay" aria-hidden="true"></canvas>
             </div>
-            <nav class="page-mobile-nav" aria-label="Navigazione pagina su dispositivo mobile">
-              <button class="icon-button" type="button" data-action="page-prev" aria-label="Pagina precedente" disabled><svg class="icon"><use href="#i-chevron-left"/></svg></button>
-              <output class="mono" id="mobile-page-count" aria-live="polite">— / —</output>
-              <button class="icon-button" type="button" data-action="page-next" aria-label="Pagina successiva" disabled><svg class="icon"><use href="#i-chevron-right"/></svg></button>
-              <span class="mobile-nav-separator" aria-hidden="true"></span>
-              <button class="icon-button" type="button" data-action="zoom-out" aria-label="Riduci zoom" disabled><svg class="icon"><use href="#i-minus"/></svg></button>
-              <button class="icon-button" type="button" data-action="fit-width" aria-label="Adatta alla larghezza" disabled><svg class="icon"><use href="#i-expand"/></svg></button>
-              <button class="icon-button" type="button" data-action="zoom-in" aria-label="Aumenta zoom" disabled><svg class="icon"><use href="#i-plus"/></svg></button>
-            </nav>
+
             <section class="xray-preview" id="xray-preview" aria-labelledby="xray-preview-title" hidden>
               <div class="xray-preview-heading"><h2 id="xray-preview-title">X-RAY · TESTO ESTRAIBILE</h2><span class="mono">SOLO LETTURA</span></div>
               <pre class="xray-preview-text mono" id="xray-text-preview" tabindex="0"></pre>
@@ -136,6 +138,17 @@
           </section>
         </section>
 
+        <!-- Page navigation stays visible even while zoomed PDF content scrolls. -->
+        <nav class="page-mobile-nav" aria-label="Navigazione pagina su dispositivo mobile">
+          <button class="icon-button" type="button" data-action="page-prev" aria-label="Pagina precedente" disabled><svg class="icon"><use href="#i-chevron-left"/></svg></button>
+          <output class="mono" id="mobile-page-count" aria-live="polite">— / —</output>
+          <button class="icon-button" type="button" data-action="page-next" aria-label="Pagina successiva" disabled><svg class="icon"><use href="#i-chevron-right"/></svg></button>
+          <span class="mobile-nav-separator" aria-hidden="true"></span>
+          <button class="icon-button" type="button" data-action="zoom-out" aria-label="Riduci zoom" disabled><svg class="icon"><use href="#i-minus"/></svg></button>
+          <button class="icon-button" type="button" data-action="fit-width" aria-label="Adatta alla larghezza" disabled><svg class="icon"><use href="#i-expand"/></svg></button>
+          <button class="icon-button" type="button" data-action="zoom-in" aria-label="Aumenta zoom" disabled><svg class="icon"><use href="#i-plus"/></svg></button>
+        </nav>
+
         <footer class="workspace-statusbar" aria-label="Stato sessione">
           <span class="statusbar-item"><svg class="icon" aria-hidden="true"><use href="#i-lock"/></svg><span id="session-state">Nessun file in sessione</span></span>
           <span class="statusbar-separator" aria-hidden="true"></span>
@@ -144,6 +157,16 @@
           <span class="statusbar-spacer"></span>
           <span class="statusbar-item statusbar-secondary" id="operation-status">Inizializzazione</span>
         </footer>
+
+        <!-- Mobile shortcuts open the existing inspector panels; they never export directly. -->
+        <nav class="mobile-actions" aria-label="Azioni rapide documento">
+          <button class="button button-primary mobile-upload-button" type="button" data-action="open-file" disabled><svg class="icon" aria-hidden="true"><use href="#i-upload"/></svg>Seleziona un PDF</button>
+          <div class="mobile-action-tabs">
+            <button class="mobile-action" type="button" data-action="mobile-inspector" data-target-tab="tab-audit" aria-controls="inspector-panel" aria-expanded="false" disabled><svg class="icon" aria-hidden="true"><use href="#i-search"/></svg><span>Audit</span></button>
+            <button class="mobile-action" type="button" data-action="mobile-inspector" data-target-tab="tab-redaction" aria-controls="inspector-panel" aria-expanded="false" disabled><svg class="icon" aria-hidden="true"><use href="#i-target"/></svg><span>Riquadri <output id="mobile-redaction-count" class="mono">0</output></span></button>
+            <button class="mobile-action mobile-action-primary" type="button" data-action="mobile-inspector" data-target-tab="tab-export" aria-controls="inspector-panel" aria-expanded="false" disabled><svg class="icon" aria-hidden="true"><use href="#i-download"/></svg><span>Esporta</span></button>
+          </div>
+        </nav>
       </main>
 
       <a class="drawer-backdrop" href="#main-content" aria-label="Chiudi pannello ispettore"></a>
