@@ -49,6 +49,9 @@ const ui = {
   drawerClose: $('.inspector-close'), drawerBackdrop: $('.drawer-backdrop'),
 };
 
+// A Windows download prompt is useful on the public web, not inside the portable app.
+ui.shell.dataset.runtime = window.location.protocol === 'pdfsanitizer:' ? 'desktop' : 'web';
+
 /** @type {{phase: 'starting'|'empty'|'loading'|'ready'|'exporting'|'destroying'|'error', epoch:number, renderEpoch:number, pdfjs:any, pdfLib:any, inspector:PdfInspector|null, editor:RedactionCanvas|null, store:RedactionStore, exportAbort:AbortController|null, reportText:string, page:number, pages:number, zoom:number, fit:boolean, xray:boolean, audit: import('./pdf-inspector.js').AuditResult|null}} */
 const state = {
   phase: 'starting', epoch: 0, renderEpoch: 0, pdfjs: null, pdfLib: null, inspector: null,
@@ -79,6 +82,13 @@ function setPhase(text) {
 
 /** @param {'preparing'|'ready'|'unavailable'|'error'} status @param {string} detail */
 function reportOfflineShell(status, detail) {
+  if (window.location.protocol === 'pdfsanitizer:') {
+    ui.offlineCache.dataset.cacheState = status;
+    ui.offlineCache.textContent = status === 'ready' ? 'APP LOCALE · PRONTA' : 'APP LOCALE · ERRORE';
+    ui.offlineCache.title = detail;
+    ui.offlineCache.setAttribute('aria-label', ui.offlineCache.textContent + '. ' + detail);
+    return;
+  }
   ui.offlineCache.dataset.cacheState = status;
   ui.offlineCache.textContent = status === 'ready' ? 'ASSET OFFLINE · PRONTI' :
     status === 'preparing' ? 'ASSET OFFLINE · PREPARAZIONE' :
@@ -89,6 +99,14 @@ function reportOfflineShell(status, detail) {
 }
 
 function updateNetworkIndicator() {
+  if (window.location.protocol === 'pdfsanitizer:') {
+    ui.net.dataset.networkState = 'offline';
+    ui.netText.textContent = 'APP LOCALE · RISORSE INCORPORATE';
+    ui.netMobile.textContent = 'APP LOCALE';
+    ui.net.setAttribute('aria-label', 'Versione desktop con risorse locali. Le richieste di rete della finestra sono bloccate.');
+    ui.net.title = 'Il blocco delle richieste del programma non disattiva Internet sul dispositivo e non garantisce la cancellazione fisica della RAM.';
+    return;
+  }
   const online = navigator.onLine !== false;
   ui.net.dataset.networkState = online ? 'online' : 'offline';
   ui.netText.textContent = online ? 'ONLINE · ELABORAZIONE LOCALE' : 'OFFLINE RILEVATO';

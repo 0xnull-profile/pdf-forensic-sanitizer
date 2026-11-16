@@ -7,9 +7,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="referrer" content="no-referrer">
   <meta name="color-scheme" content="dark">
-  <meta name="theme-color" content="#0B0E14">
+  <meta name="theme-color" content="#080F1F">
   <meta name="description" content="Audit e redaction dei PDF interamente in locale. Esportazione da immagini raster con verifica del documento ricostruito.">
   <title>PDF Sanitizer — Forensic Redaction Tool</title>
+  <!-- Brand assets are local, versioned, and precached together with the application. -->
+  <link rel="icon" type="image/x-icon" href="./favicon.ico">
+  <link rel="icon" type="image/png" sizes="32x32" href="./icons/favicon-32.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="./icons/apple-touch-icon.png">
   <link rel="manifest" href="./manifest.webmanifest">
   <link rel="stylesheet" href="./css/style.css">
 </head>
@@ -40,6 +44,9 @@
     <symbol id="i-sliders" viewBox="0 0 24 24"><path d="M4 7h9m4 0h3M4 17h3m4 0h9"/><circle cx="15" cy="7" r="2"/><circle cx="9" cy="17" r="2"/></symbol>
     <symbol id="i-search" viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 5 5"/></symbol>
     <symbol id="i-download" viewBox="0 0 24 24"><path d="M12 3v12m0 0 5-5m-5 5-5-5M4 17v3h16v-3"/></symbol>
+    <symbol id="i-monitor" viewBox="0 0 24 24"><rect x="2.5" y="3.5" width="19" height="14" rx="2"/><path d="M8 21h8M12 17.5V21"/></symbol>
+    <symbol id="i-arrow-up-right" viewBox="0 0 24 24"><path d="M7 17 17 7M8 7h9v9"/></symbol>
+    <symbol id="i-spark" viewBox="0 0 24 24"><path d="m12 3 1.8 6.2L20 11l-6.2 1.8L12 19l-1.8-6.2L4 11l6.2-1.8L12 3ZM19 17v4m-2-2h4"/></symbol>
     <symbol id="i-grid" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></symbol>
   </svg>
 
@@ -49,7 +56,7 @@
         <span class="brand-mark" aria-hidden="true"><svg class="icon icon-lg"><use href="#i-shield"/></svg></span>
         <span class="brand-name">PDF <strong>SANITIZER</strong></span>
         <span class="brand-separator" aria-hidden="true"></span>
-        <span class="brand-version mono">v0.6-rc.1 · RELEASE CANDIDATE</span>
+        <span class="brand-version mono">v1.0.0-rc.1 · RELEASE CANDIDATE</span>
       </div>
 
       <nav class="document-controls" aria-label="Navigazione documento">
@@ -76,6 +83,8 @@
           <span class="network-text">RETE · NON VERIFICATA</span>
           <span class="network-text-mobile" aria-hidden="true">RETE</span>
         </div>
+        <!-- The Windows link opens official GitHub Releases until an approved EXE has been published. -->
+        <a class="button button-secondary topbar-windows-link windows-release-link" href="https://github.com/0xnull-profile/pdf-forensic-sanitizer/releases/download/v1.0.0-rc.1/PDF-Forensic-Sanitizer-1.0.0-rc.1-Windows-x64.exe" target="_blank" rel="noopener noreferrer" aria-label="Versione Windows portabile: apri le release ufficiali su GitHub"><svg class="icon" aria-hidden="true"><use href="#i-monitor"/></svg><span>Windows</span><svg class="icon icon-external" aria-hidden="true"><use href="#i-arrow-up-right"/></svg></a>
         <button class="button button-ghost destroy-session" type="button" data-action="destroy-session" disabled>
           <svg class="icon"><use href="#i-trash"/></svg><span>Distruggi sessione</span>
         </button>
@@ -112,12 +121,17 @@
           <section class="empty-state" id="empty-state" aria-labelledby="empty-state-title">
             <div class="dropzone" id="pdf-dropzone" data-drop-state="idle">
               <div class="dropzone-icon" aria-hidden="true"><svg class="icon"><use href="#i-file"/></svg><span class="icon-corner"><svg class="icon"><use href="#i-lock"/></svg></span></div>
-              <p class="overline dropzone-eyebrow">IMPORTAZIONE LOCALE</p>
-              <h1 id="empty-state-title">Il documento resta sul tuo dispositivo.</h1>
-              <p class="dropzone-description">Trascina un PDF o selezionalo dal dispositivo per avviare l’analisi preliminare. Il file viene elaborato solo nel browser.</p>
+              <p class="overline dropzone-eyebrow"><span class="eyebrow-dot" aria-hidden="true"></span> PRIVATE WORKSPACE · PDF</p>
+              <h1 id="empty-state-title">I tuoi documenti.<br><span class="hero-highlight">Solo tuoi.</span></h1>
+              <p class="dropzone-description">Analizza, oscura e ricostruisci i PDF direttamente sul dispositivo. Nessun caricamento del documento su un server.</p>
               <input class="visually-hidden" id="pdf-file-input" type="file" accept=".pdf,application/pdf" aria-label="Seleziona PDF dal dispositivo" disabled>
               <button class="button button-primary upload-button" type="button" data-action="open-file" disabled><svg class="icon"><use href="#i-upload"/></svg>Seleziona PDF</button>
               <div class="dropzone-footnote"><svg class="icon" aria-hidden="true"><use href="#i-info"/></svg><span>Inizializzazione del motore locale in corso.</span></div>
+            </div>
+            <div class="edition-switcher windows-release-card" aria-label="Versione per Windows">
+              <div class="edition-icon" aria-hidden="true"><svg class="icon icon-lg"><use href="#i-monitor"/></svg></div>
+              <div class="edition-copy"><strong>Preferisci lavorare senza browser?</strong><span>Versione Windows portabile · senza installazione · utilizzo offline</span></div>
+              <a class="edition-link windows-release-link" href="https://github.com/0xnull-profile/pdf-forensic-sanitizer/releases/download/v1.0.0-rc.1/PDF-Forensic-Sanitizer-1.0.0-rc.1-Windows-x64.exe" target="_blank" rel="noopener noreferrer" aria-label="Apri le release ufficiali per scaricare la versione portabile Windows"><span>Windows</span><svg class="icon" aria-hidden="true"><use href="#i-arrow-up-right"/></svg></a>
             </div>
             <p class="viewport-hint"><svg class="icon" aria-hidden="true"><use href="#i-lock"/></svg> Analisi preliminare · Esportazione non disponibile</p>
           </section>

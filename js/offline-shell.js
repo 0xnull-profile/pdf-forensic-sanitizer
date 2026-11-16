@@ -33,6 +33,12 @@ export async function getStaticCacheStatus(worker) {
  * @param {(status:'preparing'|'ready'|'unavailable'|'error', detail:string)=>void} report
  */
 export async function installOfflineShell(report) {
+  // The portable desktop app bundles the verified release and has no HTTP
+  // server or service worker. Its resources are available without a network.
+  if (window.location.protocol === 'pdfsanitizer:') {
+    report('ready', 'Versione desktop: risorse incluse nel programma. Nessuna cache Service Worker necessaria.');
+    return;
+  }
   if (!('serviceWorker' in navigator) || !window.isSecureContext) {
     report('unavailable', 'Serve HTTPS o localhost e un browser con Service Worker.');
     return;
