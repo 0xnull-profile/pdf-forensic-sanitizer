@@ -56,7 +56,7 @@
         <span class="brand-mark" aria-hidden="true"><svg class="icon icon-lg"><use href="#i-shield"/></svg></span>
         <span class="brand-name">PDF <strong>SANITIZER</strong></span>
         <span class="brand-separator" aria-hidden="true"></span>
-        <span class="brand-version mono">v1.0.0-rc.1 · RELEASE CANDIDATE</span>
+        <span class="brand-version mono">v1.0.0 · VERSIONE STABILE</span>
       </div>
 
       <nav class="document-controls" aria-label="Navigazione documento">
@@ -77,6 +77,8 @@
       </nav>
 
       <div class="topbar-actions">
+        <!-- Session-only locale selection; no browser storage or translation services. -->
+        <button id="language-toggle" class="language-toggle" type="button" lang="en" aria-label="Passa all’inglese" title="Passa all’inglese">EN</button>
         <!-- app.js sets the network status; this placeholder is not a traffic measurement. -->
         <div id="network-indicator" class="network-indicator" data-network-state="unknown" role="status" aria-label="Stato rete non ancora verificato" title="Lo stato della rete sarà verificato dal modulo applicativo">
           <span class="network-dot" aria-hidden="true"></span>
@@ -84,7 +86,7 @@
           <span class="network-text-mobile" aria-hidden="true">RETE</span>
         </div>
         <!-- The Windows link opens official GitHub Releases until an approved EXE has been published. -->
-        <a class="button button-secondary topbar-windows-link windows-release-link" href="https://github.com/0xnull-profile/pdf-forensic-sanitizer/releases/download/v1.0.0-rc.1/PDF-Forensic-Sanitizer-1.0.0-rc.1-Windows-x64.exe" target="_blank" rel="noopener noreferrer" aria-label="Versione Windows portabile: apri le release ufficiali su GitHub"><svg class="icon" aria-hidden="true"><use href="#i-monitor"/></svg><span>Windows</span><svg class="icon icon-external" aria-hidden="true"><use href="#i-arrow-up-right"/></svg></a>
+        <a class="button button-secondary topbar-windows-link windows-release-link" href="https://github.com/0xnull-profile/pdf-forensic-sanitizer/releases/download/v1.0.0/PDF-Forensic-Sanitizer-1.0.0-Windows-x64.exe" target="_blank" rel="noopener noreferrer" aria-label="Versione Windows portabile: apri le release ufficiali su GitHub"><svg class="icon" aria-hidden="true"><use href="#i-monitor"/></svg><span>Windows</span><svg class="icon icon-external" aria-hidden="true"><use href="#i-arrow-up-right"/></svg></a>
         <button class="button button-ghost destroy-session" type="button" data-action="destroy-session" disabled>
           <svg class="icon"><use href="#i-trash"/></svg><span>Distruggi sessione</span>
         </button>
@@ -131,7 +133,7 @@
             <div class="edition-switcher windows-release-card" aria-label="Versione per Windows">
               <div class="edition-icon" aria-hidden="true"><svg class="icon icon-lg"><use href="#i-monitor"/></svg></div>
               <div class="edition-copy"><strong>Preferisci lavorare senza browser?</strong><span>Versione Windows portabile · senza installazione · utilizzo offline</span></div>
-              <a class="edition-link windows-release-link" href="https://github.com/0xnull-profile/pdf-forensic-sanitizer/releases/download/v1.0.0-rc.1/PDF-Forensic-Sanitizer-1.0.0-rc.1-Windows-x64.exe" target="_blank" rel="noopener noreferrer" aria-label="Apri le release ufficiali per scaricare la versione portabile Windows"><span>Windows</span><svg class="icon" aria-hidden="true"><use href="#i-arrow-up-right"/></svg></a>
+              <a class="edition-link windows-release-link" href="https://github.com/0xnull-profile/pdf-forensic-sanitizer/releases/download/v1.0.0/PDF-Forensic-Sanitizer-1.0.0-Windows-x64.exe" target="_blank" rel="noopener noreferrer" aria-label="Apri le release ufficiali per scaricare la versione portabile Windows"><span>Windows</span><svg class="icon" aria-hidden="true"><use href="#i-arrow-up-right"/></svg></a>
             </div>
             <p class="viewport-hint"><svg class="icon" aria-hidden="true"><use href="#i-lock"/></svg> Analisi preliminare · Esportazione non disponibile</p>
           </section>

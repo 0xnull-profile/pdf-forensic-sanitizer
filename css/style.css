@@ -995,3 +995,34 @@ body { background: #080f1f; }
   .network-text { overflow: hidden; text-overflow: ellipsis; }
   .destroy-session { display: none; }
 }
+
+/* BILINGUAL-UI-SWITCH: accessible, compact local-only locale control. */
+.language-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+  width: 42px;
+  min-width: 42px;
+  height: 36px;
+  border: 1px solid rgba(155, 195, 240, .4);
+  border-radius: 11px;
+  color: #e8f3ff;
+  background: rgba(51, 76, 112, .48);
+  font: 700 11px/1 var(--font-mono);
+  letter-spacing: .06em;
+  cursor: pointer;
+  transition: background .18s ease, border-color .18s ease;
+}
+.language-toggle:hover { background: rgba(75, 112, 156, .62); border-color: rgba(145, 218, 244, .72); }
+.language-toggle:focus-visible { outline: 2px solid #70d9f7; outline-offset: 3px; }
+@media (max-width: 767px) {
+  .language-toggle { width: 40px; min-width: 40px; height: 40px; border-radius: 11px; }
+  .topbar-actions { gap: 4px; }
+}
+@media (max-width: 359px) {
+  .language-toggle { width: 36px; min-width: 36px; height: 40px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .language-toggle { transition: none; }
+}

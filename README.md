@@ -10,11 +10,11 @@
 
 <p align="center">
   <a href="https://0xnull-profile.github.io/pdf-forensic-sanitizer/">Launch Web Edition</a> |
-  <a href="https://github.com/0xnull-profile/pdf-forensic-sanitizer/releases/download/v1.0.0-rc.1/PDF-Forensic-Sanitizer-1.0.0-rc.1-Windows-x64.exe">Download Windows Portable</a> |
-  <a href="https://github.com/0xnull-profile/pdf-forensic-sanitizer/releases/tag/v1.0.0-rc.1">Release and checksums</a>
+  <a href="https://github.com/0xnull-profile/pdf-forensic-sanitizer/releases/download/v1.0.0/PDF-Forensic-Sanitizer-1.0.0-Windows-x64.exe">Download Windows Portable</a> |
+  <a href="https://github.com/0xnull-profile/pdf-forensic-sanitizer/releases/tag/v1.0.0">Release and checksums</a>
 </p>
 
-> **Release status:** `v1.0.0-rc.1` is a **public pre-release**, not the final stable `v1.0.0`. The application is not independently security-certified.
+> **Release status:** `v1.0.0` is the first stable release. This does not constitute an independent security certification; see the limitations below.
 
 ## Why this project exists
 
@@ -26,7 +26,7 @@ The selected document is processed on the user's device. The application does **
 
 | | Web Edition | Windows Portable |
 | --- | --- | --- |
-| Access | [Open in browser](https://0xnull-profile.github.io/pdf-forensic-sanitizer/) | [Download `.exe` (x64)](https://github.com/0xnull-profile/pdf-forensic-sanitizer/releases/download/v1.0.0-rc.1/PDF-Forensic-Sanitizer-1.0.0-rc.1-Windows-x64.exe) |
+| Access | [Open in browser](https://0xnull-profile.github.io/pdf-forensic-sanitizer/) | [Download `.exe` (x64)](https://github.com/0xnull-profile/pdf-forensic-sanitizer/releases/download/v1.0.0/PDF-Forensic-Sanitizer-1.0.0-Windows-x64.exe) |
 | Setup | No application installation | No Node.js, Python or manual HTTP server |
 | Offline use | After all approved static assets have been cached and offline readiness is confirmed | Application assets are bundled; usable without an Internet connection |
 | Experience | Responsive, touch-friendly Web/PWA | Standalone Windows desktop window |
@@ -43,6 +43,7 @@ The selected document is processed on the user's device. The application does **
 - Reopens and checks the generated PDF before making the verified output available for saving.
 - Uses local PDF.js and pdf-lib assets, with no runtime CDN dependencies.
 - Includes a responsive **Forensic Glass** interface, touch controls and a static-asset-only offline cache for the Web Edition.
+- Offers an **Italian / English** interface on Web and Windows Desktop, including translated controls and status messages.
 
 Raster reconstruction intentionally removes selectable/searchable text from the output. It does not guarantee that every sensitive detail was masked correctly: visible unmasked content can still be read or recovered through OCR.
 
@@ -58,7 +59,7 @@ Raster reconstruction intentionally removes selectable/searchable text from the 
 
 ### Windows Portable
 
-1. Download the [Windows x64 `.exe`](https://github.com/0xnull-profile/pdf-forensic-sanitizer/releases/download/v1.0.0-rc.1/PDF-Forensic-Sanitizer-1.0.0-rc.1-Windows-x64.exe).
+1. Download the [Windows x64 `.exe`](https://github.com/0xnull-profile/pdf-forensic-sanitizer/releases/download/v1.0.0/PDF-Forensic-Sanitizer-1.0.0-Windows-x64.exe).
 2. Move the file to a folder of your choice. No installation or local server is necessary.
 3. For sensitive workflows, disconnect from the network before opening your document.
 4. Launch the executable, import the PDF, apply masks and export to a destination you choose.
@@ -81,7 +82,7 @@ For highly sensitive documents, prefer the Windows Portable Edition while discon
 
 ## Verify downloads and distribution
 
-Each Windows release provides a portable executable and `WINDOWS-SHA256SUMS.txt`. Download **both** files from the [same official release](https://github.com/0xnull-profile/pdf-forensic-sanitizer/releases/tag/v1.0.0-rc.1).
+Each Windows release provides a portable executable and `WINDOWS-SHA256SUMS.txt`. Download **both** files from the [same official release](https://github.com/0xnull-profile/pdf-forensic-sanitizer/releases/tag/v1.0.0).
 
 Using Git Bash or another environment with `sha256sum`, run this from the download folder:
 
@@ -92,7 +93,7 @@ sha256sum -c WINDOWS-SHA256SUMS.txt
 On Windows PowerShell, you can also calculate the hash and compare it manually with the text file:
 
 ```powershell
-Get-FileHash -Algorithm SHA256 ".\PDF-Forensic-Sanitizer-1.0.0-rc.1-Windows-x64.exe"
+Get-FileHash -Algorithm SHA256 ".\PDF-Forensic-Sanitizer-1.0.0-Windows-x64.exe"
 ```
 
 The Web distribution includes [SHA-256 checksums](RELEASE-SHA256SUMS.txt) and an [SPDX software bill of materials](SBOM.spdx.json). **Checksums published beside the files on the same hosting service detect changes but do not independently authenticate the publisher.** The README files are repository documentation, not part of the application's signed or checksummed `dist/` payload.
@@ -101,7 +102,7 @@ The Web distribution includes [SHA-256 checksums](RELEASE-SHA256SUMS.txt) and an
 
 This public repository contains the **deployable Web distribution** and its public Windows release assets. The separate development repository, including full source, build tools and tests, is **private at this stage**. Accordingly, this public distribution should not be described as a complete open-source development release. Please refer to any explicitly published license terms; public availability alone does not grant an open-source license.
 
-The user interface is currently in **Italian**. This README is available in [English](README.md) and [Italian](README.it.md).
+The user interface supports **English and Italian**. It selects the initial language from the browser/system locale; use the **IT / EN** control to switch during a session. The language choice is not stored persistently. This README is available in [English](README.md) and [Italian](README.it.md).
 
 Found a bug? Use [GitHub Issues](https://github.com/0xnull-profile/pdf-forensic-sanitizer/issues) if enabled, with a **synthetic or anonymized reproduction**. Never upload confidential PDFs, secrets or personal data to a public issue. For a sensitive security report, use a private contact channel rather than posting exploit details publicly.
 

@@ -2,11 +2,11 @@
   "spdxVersion": "SPDX-2.3",
   "dataLicense": "CC0-1.0",
   "SPDXID": "SPDXRef-DOCUMENT",
-  "name": "PDF-Sanitizer-1.0.0-rc.1",
-  "documentNamespace": "https://example.invalid/pdf-sanitizer/spdx/3a471dbd68ba8fb15470210bfdb79008",
+  "name": "PDF-Sanitizer-1.0.0",
+  "documentNamespace": "https://example.invalid/pdf-sanitizer/spdx/0454971690dcb7ad4046e1efd88a5b56",
   "creationInfo": {
     "creators": [
-      "Tool: pdf-sanitizer-static-release/1.0.0-rc.1"
+      "Tool: pdf-sanitizer-static-release/1.0.0"
     ],
     "created": "1970-01-01T00:00:00Z"
   },

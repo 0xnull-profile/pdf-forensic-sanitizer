@@ -10,11 +10,11 @@
 
 <p align="center">
   <a href="https://0xnull-profile.github.io/pdf-forensic-sanitizer/">Apri la versione Web</a> |
-  <a href="https://github.com/0xnull-profile/pdf-forensic-sanitizer/releases/download/v1.0.0-rc.1/PDF-Forensic-Sanitizer-1.0.0-rc.1-Windows-x64.exe">Scarica Windows Portable</a> |
-  <a href="https://github.com/0xnull-profile/pdf-forensic-sanitizer/releases/tag/v1.0.0-rc.1">Release e checksum</a>
+  <a href="https://github.com/0xnull-profile/pdf-forensic-sanitizer/releases/download/v1.0.0/PDF-Forensic-Sanitizer-1.0.0-Windows-x64.exe">Scarica Windows Portable</a> |
+  <a href="https://github.com/0xnull-profile/pdf-forensic-sanitizer/releases/tag/v1.0.0">Release e checksum</a>
 </p>
 
-> **Stato della release:** `v1.0.0-rc.1` è una **versione preliminare pubblica**, non ancora la stabile `v1.0.0`. L'applicazione non possiede una certificazione indipendente di sicurezza.
+> **Stato della release:** `v1.0.0` è la prima versione stabile. Questo non equivale a una certificazione indipendente di sicurezza; consulta le limitazioni riportate sotto.
 
 ## Perché nasce il progetto
 
@@ -26,7 +26,7 @@ Il documento selezionato viene elaborato sul dispositivo dell'utente. L'applicaz
 
 | | Versione Web | Windows Portable |
 | --- | --- | --- |
-| Accesso | [Apri nel browser](https://0xnull-profile.github.io/pdf-forensic-sanitizer/) | [Scarica `.exe` (x64)](https://github.com/0xnull-profile/pdf-forensic-sanitizer/releases/download/v1.0.0-rc.1/PDF-Forensic-Sanitizer-1.0.0-rc.1-Windows-x64.exe) |
+| Accesso | [Apri nel browser](https://0xnull-profile.github.io/pdf-forensic-sanitizer/) | [Scarica `.exe` (x64)](https://github.com/0xnull-profile/pdf-forensic-sanitizer/releases/download/v1.0.0/PDF-Forensic-Sanitizer-1.0.0-Windows-x64.exe) |
 | Installazione | Nessuna installazione dell'app | Nessun Node.js, Python o server HTTP manuale |
 | Uso offline | Dopo la memorizzazione completa degli asset statici e la conferma di disponibilità | Risorse incorporate; funziona senza connessione Internet |
 | Interfaccia | Web/PWA responsive, comandi touch | Finestra desktop autonoma per Windows |
@@ -43,6 +43,7 @@ Il documento selezionato viene elaborato sul dispositivo dell'utente. L'applicaz
 - Riapre e verifica il PDF generato prima di consentirne il salvataggio.
 - Utilizza PDF.js e pdf-lib locali, senza dipendenze da CDN durante l'esecuzione.
 - Offre l'interfaccia responsive **Forensic Glass**, controlli touch e cache offline della sola applicazione Web.
+- Include una **UI bilingue italiano / inglese** su Web e Windows, con controlli e messaggi di stato localizzati.
 
 La ricostruzione raster elimina intenzionalmente la selezione e la ricerca del testo nell'output. **Non garantisce che ogni informazione sensibile sia stata coperta correttamente:** contenuti rimasti visibili possono essere letti oppure recuperati tramite OCR.
 
@@ -58,7 +59,7 @@ La ricostruzione raster elimina intenzionalmente la selezione e la ricerca del t
 
 ### Windows Portable
 
-1. Scarica il [file `.exe` per Windows x64](https://github.com/0xnull-profile/pdf-forensic-sanitizer/releases/download/v1.0.0-rc.1/PDF-Forensic-Sanitizer-1.0.0-rc.1-Windows-x64.exe).
+1. Scarica il [file `.exe` per Windows x64](https://github.com/0xnull-profile/pdf-forensic-sanitizer/releases/download/v1.0.0/PDF-Forensic-Sanitizer-1.0.0-Windows-x64.exe).
 2. Spostalo nella cartella che preferisci. Non richiede installazione né server locali.
 3. Per i documenti più riservati, disconnetti la rete prima di aprire il file.
 4. Avvia il programma, importa il PDF, applica le maschere ed esporta nella destinazione scelta.
@@ -81,7 +82,7 @@ Per documenti molto sensibili, preferisci Windows Portable con la rete disconnes
 
 ## Verifica dei download
 
-La release Windows contiene l'eseguibile portabile e `WINDOWS-SHA256SUMS.txt`. Scarica **entrambi** dalla [release ufficiale](https://github.com/0xnull-profile/pdf-forensic-sanitizer/releases/tag/v1.0.0-rc.1).
+La release Windows contiene l'eseguibile portabile e `WINDOWS-SHA256SUMS.txt`. Scarica **entrambi** dalla [release ufficiale](https://github.com/0xnull-profile/pdf-forensic-sanitizer/releases/tag/v1.0.0).
 
 Da Git Bash o da un ambiente con `sha256sum`, nella cartella dei download:
 
@@ -92,7 +93,7 @@ sha256sum -c WINDOWS-SHA256SUMS.txt
 In PowerShell puoi anche calcolare l'hash e confrontarlo manualmente con quello del file di checksum:
 
 ```powershell
-Get-FileHash -Algorithm SHA256 ".\PDF-Forensic-Sanitizer-1.0.0-rc.1-Windows-x64.exe"
+Get-FileHash -Algorithm SHA256 ".\PDF-Forensic-Sanitizer-1.0.0-Windows-x64.exe"
 ```
 
 La distribuzione Web comprende i [checksum SHA-256](RELEASE-SHA256SUMS.txt) e la [distinta software SPDX](SBOM.spdx.json). **Un checksum ospitato insieme al file consente di rilevare modifiche, ma da solo non autentica il produttore in modo indipendente.** I README sono documentazione del repository, non file della `dist/` inclusi nel relativo manifest di checksum.
@@ -101,7 +102,7 @@ La distribuzione Web comprende i [checksum SHA-256](RELEASE-SHA256SUMS.txt) e la
 
 Il repository pubblico contiene la **distribuzione Web** pronta all'uso e gli allegati delle release Windows. Il repository di sviluppo separato, con sorgenti completi, strumenti di compilazione e test, è **privato in questa fase**. Pertanto non si deve presentare questo repository come un rilascio completo dei sorgenti open source. Per i diritti di utilizzo fanno fede solo gli eventuali termini di licenza pubblicati esplicitamente: la disponibilità pubblica dei file non implica automaticamente una licenza open source.
 
-L'interfaccia utente è attualmente in **italiano**. Il README è disponibile in [inglese](README.md) e in [italiano](README.it.md).
+L'interfaccia è disponibile in **italiano e inglese**. La lingua iniziale segue le impostazioni del browser/sistema; il selettore **IT / EN** permette di cambiarla durante la sessione senza memorizzarla in modo persistente. Il README è disponibile in [inglese](README.md) e in [italiano](README.it.md).
 
 Hai trovato un bug? Se abilitata, utilizza la sezione [GitHub Issues](https://github.com/0xnull-profile/pdf-forensic-sanitizer/issues) con un esempio **sintetico o anonimizzato**. Non caricare mai PDF riservati, credenziali o dati personali in una segnalazione pubblica. Per una vulnerabilità sensibile utilizza un contatto privato, anziché pubblicare i dettagli dell'attacco.
 

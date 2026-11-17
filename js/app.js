@@ -9,6 +9,7 @@ import { RedactionCanvas, RedactionStore } from './redaction-canvas.js';
 import { sanitizePdf, loadLocalPdfLib } from './sanitizer-engine.js';
 import { exportConfigKey } from './export-integrity.js';
 import { installOfflineShell } from './offline-shell.js';
+import { installLanguage, translateUi, translateReport } from './ui-language.js';
 
 const $ = (/** @type {string} */ selector) => document.querySelector(selector);
 const ui = {
@@ -364,7 +365,7 @@ function invalidateVerifiedOutput() {
   if (verifiedConfigKey === null || verifiedConfigKey === currentExportKey()) return;
   clearDownloadUrl();
   state.reportText = '';
-  ui.reportOutput.textContent = 'Le impostazioni sono cambiate. Avvia un nuovo export e una nuova verifica.';
+  ui.reportOutput.textContent = translateUi('Le impostazioni sono cambiate. Avvia un nuovo export e una nuova verifica.');
   ui.copyReport.disabled = true;
   if (ui.reportDialog.open) ui.reportDialog.close();
   ui.operation.textContent = 'Output precedente invalidato · ripeti la sanificazione';
@@ -457,7 +458,7 @@ async function runExport() {
       'Nessun contatore di traffico di rete viene dichiarato senza misurazione.',
     ].join('\n');
     state.reportText = report;
-    ui.reportOutput.textContent = report;
+    ui.reportOutput.textContent = translateReport(report);
     ui.copyReport.disabled = false;
     ui.progressBar.value = 100;
     ui.progressTitle.textContent = 'File ricostruito e verificato';
@@ -483,7 +484,7 @@ async function runExport() {
 
 async function copyReport() {
   if (!state.reportText) return;
-  try { await navigator.clipboard.writeText(state.reportText); toast('info', 'Report copiato', 'Il riepilogo è negli appunti del dispositivo.'); }
+  try { await navigator.clipboard.writeText(translateReport(state.reportText)); toast('info', 'Report copiato', 'Il riepilogo è negli appunti del dispositivo.'); }
   catch { toast('warning', 'Copia non consentita', 'Il browser potrebbe richiedere HTTPS o un permesso esplicito.'); }
 }
 
@@ -499,7 +500,7 @@ function resetVisualState() {
   ui.sheet.style.removeProperty('width');
   ui.sheet.style.removeProperty('height');
   ui.file.value = '';
-  ui.fileName.textContent = 'Nessun documento';
+  ui.fileName.textContent = translateUi('Nessun documento');
   ui.viewer.scrollTop = ui.viewer.scrollLeft = 0;
   ui.status.textContent = 'Nessun file in sessione';
   ui.detail.textContent = 'PDF: — | Pagine: —';
@@ -512,7 +513,7 @@ function resetVisualState() {
   ui.watermark.value = ''; ui.opacity.value = '25'; ui.opacityValue.textContent = '25%';
   ui.progress.hidden = true; ui.progressBar.value = 0;
   state.reportText = ''; ui.copyReport.disabled = true;
-  ui.reportOutput.textContent = 'Nessun report disponibile.';
+  ui.reportOutput.textContent = translateUi('Nessun report disponibile.');
   ui.verifiedDownload.hidden = true; ui.verifiedDownload.removeAttribute('href');
   selectTab('tab-audit');
   state.pages = 0;
@@ -560,8 +561,8 @@ function markReadyToSelect() {
   state.phase = 'empty';
   resetVisualState();
   setPhase('AUDIT LOCALE · IN ATTESA DI PDF');
-  const heading = $('#empty-state-title');
-  heading.textContent = 'Il documento resta sul tuo dispositivo.';
+  // Preserve the original Forensic Glass heading and its highlighted span.
+  // Localization owns the text nodes; flattening the heading breaks both UI and E2E.
   $('.dropzone-description').textContent = 'Trascina un PDF o selezionalo dal dispositivo. L\'analisi è locale e non invia il file a server.';
   $('.dropzone-footnote span').textContent = 'Fino a 100 MB e 300 pagine. Per dati critici, disconnetti la rete prima dell\'importazione.';
   $('.viewport-hint').lastChild.textContent = ' Importazione locale · Export solo dopo verifica strutturale';
@@ -606,7 +607,7 @@ async function importFile(file) {
     setEditorTool('select');
     resetIdleTimer();
     ui.fileName.textContent = safeText(file.name, 120) || 'documento.pdf';
-    ui.fileName.title = 'Nome del file locale';
+    ui.fileName.title = translateUi('Nome del file locale');
     ui.status.textContent = 'Documento in memoria · non sanificato';
     ui.detail.textContent = `PDF: ${(file.size / (1024 * 1024)).toFixed(2)} MB | Pagine: ${state.pages}`;
     ui.empty.hidden = true;
@@ -1010,4 +1011,20 @@ async function start() {
   }
 }
 
+// Language changes do not re-open the source PDF, change masks or export config.
+installLanguage(() => {
+  if (state.reportText) {
+    ui.reportOutput.textContent = translateReport(state.reportText);
+  } else if (ui.reportOutput.textContent) {
+    const invalidated = [
+      'Le impostazioni sono cambiate. Avvia un nuovo export e una nuova verifica.',
+      'Settings changed. Start a new export and verification.',
+    ].includes(ui.reportOutput.textContent.trim());
+    ui.reportOutput.textContent = translateUi(invalidated
+      ? 'Le impostazioni sono cambiate. Avvia un nuovo export e una nuova verifica.'
+      : 'Nessun report disponibile.');
+  }
+  ui.fileName.title = translateUi('Nome del file locale');
+  updateNetworkIndicator();
+});
 void start();
